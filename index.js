@@ -98,6 +98,36 @@ app.get("/api/users/:id", (req, res) => {
 });
 
 
+// Delete a user by id
+
+app.delete("/api/users/:id", (req, res) => {
+    try {
+        const id = req.params.id;
+        const position = users.findIndex(user => user.id === id);
+        let deletedUser = {};
+
+        if (position === -1) {
+            res.status(404).send({
+                error: "User doesn't exist"
+            });
+        }
+        
+        deletedUser = users[position];
+
+        users = users.filter(user => user.id !== id);
+        
+        res.json(deletedUser);
+
+    } catch (error) {
+        console.error(error);
+        
+        return res.status(500).send({
+            error: "Server error. The user information could not be retrieved."
+        });
+    }
+});
+
+
 
 app.listen(PORT, ADDRESS, () => {
     console.log("Server is running...");
