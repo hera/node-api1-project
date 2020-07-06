@@ -146,7 +146,7 @@ app.put("/api/users/:id", (req, res) => {
         if (receivedData.name !== undefined) {
             editedUser.name = receivedData.name;
         }
-
+        
         if (receivedData.bio !== undefined) {
             editedUser.bio = receivedData.bio;
         }
