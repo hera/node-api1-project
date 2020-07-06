@@ -11,18 +11,6 @@ const ADDRESS = "127.0.0.1";
 
 app.use(express.json());
 
-// If the received data is invalid, respond with an error message
-app.use((err, req, res, next) => {
-    if (err instanceof SyntaxError && err.status === 400) {
-        console.error(err);
-
-        return res.status(400).send({
-            error: "SyntaxError. Please check the request data."
-        });
-    }
-    next();
-});
-
 
 // Sample initial data
 
@@ -38,7 +26,15 @@ let users = [
 // Get all users
 
 app.get("/api/users", (req, res) => {
-    res.json(users);
+    try {
+        res.json(users);
+    } catch (error) {
+        console.error(error);
+
+        return res.status(500).send({
+            error: "The users information could not be retrieved."
+        });
+    }
 });
 
 
@@ -67,11 +63,38 @@ app.post("/api/users", (req, res) => {
             });
         }
     } catch (error) {
+        console.error(error);
+
         res.status(500).json({
             error: "An error has occured on the server"
         });
     }
 
+});
+
+
+// Get a user by id
+
+app.get("/api/users/:id", (req, res) => {
+    try {
+        const id = req.params.id;
+        const position = users.findIndex(user => user.id === id);
+
+        if (position === -1) {
+            res.status(404).send({
+                error: "User doesn't exist"
+            });
+        }
+
+        res.json(users[position]);
+
+    } catch (error) {
+        console.error(error);
+        
+        return res.status(500).send({
+            error: "Server error. The user information could not be retrieved."
+        });
+    }
 });
 
 
