@@ -2,10 +2,29 @@ const express = require("express");
 const shortid = require("shortid");
 
 const app = express();
-app.use(express.json());
 
 const PORT = 8000;
 const ADDRESS = "127.0.0.1";
+
+
+// Middleware
+
+app.use(express.json());
+
+// If the received data is invalid, respond with an error message
+app.use((err, req, res, next) => {
+    if (err instanceof SyntaxError && err.status === 400) {
+        console.error(err);
+
+        return res.status(400).send({
+            error: "SyntaxError. Please check the request data."
+        });
+    }
+    next();
+});
+
+
+// Sample initial data
 
 let users = [
     {
@@ -23,27 +42,33 @@ app.get("/api/users", (req, res) => {
 });
 
 
-
 // Post a new user
 
 app.post("/api/users", (req, res) => {
-    let receivedData = req.body;
+    
+    try {
+        let receivedData = req.body;
 
-    if (receivedData.name && receivedData.bio) {
+        if (receivedData.name && receivedData.bio) {
 
-        let newUser = {
-            id: shortid.generate(),
-            name: receivedData.name,
-            bio: receivedData.bio
-        };
+            let newUser = {
+                id: shortid.generate(),
+                name: receivedData.name,
+                bio: receivedData.bio
+            };
 
-        users.push(newUser);
+            users.push(newUser);
 
-        res.status(201).json(newUser);
+            res.status(201).json(newUser);
 
-    } else {
-        res.status(400).json({
-            error: "Please provide user name and bio"
+        } else {
+            res.status(400).json({
+                error: "Please provide user name and bio"
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            error: "An error has occured on the server"
         });
     }
 
