@@ -128,6 +128,42 @@ app.delete("/api/users/:id", (req, res) => {
 });
 
 
+// Edit user
+
+app.put("/api/users/:id", (req, res) => {
+    try {
+        const id = req.params.id;
+        const receivedData = req.body;
+        const position = users.findIndex(user => user.id === id);
+        let editedUser = {};
+
+        if (position === -1) {
+            res.status(404).send({
+                error: "User doesn't exist"
+            });
+        }
+
+        if (receivedData.name !== undefined) {
+            editedUser.name = receivedData.name;
+        }
+
+        if (receivedData.bio !== undefined) {
+            editedUser.bio = receivedData.bio;
+        }
+
+        Object.assign(users[position], editedUser);
+        
+        res.json(users[position]);
+
+    } catch (error) {
+        console.error(error);
+        
+        return res.status(500).send({
+            error: "Server error. The user information could not be edited."
+        });
+    }
+});
+
 
 app.listen(PORT, ADDRESS, () => {
     console.log("Server is running...");
