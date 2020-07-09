@@ -1,10 +1,8 @@
+require("dotenv").config();
 const express = require("express");
 const shortid = require("shortid");
 
 const app = express();
-
-const PORT = 8000;
-const ADDRESS = "127.0.0.1";
 
 
 // Middleware
@@ -165,6 +163,6 @@ app.put("/api/users/:id", (req, res) => {
 });
 
 
-app.listen(PORT, ADDRESS, () => {
+app.listen(process.env.PORT, () => {
     console.log("Server is running...");
 });
